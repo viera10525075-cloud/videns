@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Detail Produk - The Jelly Parlour</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600;1,700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== Font baru: Playfair Display italic untuk judul utama, Poppins untuk badan teks ===== */
+        .brand-title {
+            font-family: "Playfair Display", "Segoe UI", serif !important;
+            font-style: italic !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Hilangkan underline di semua link ===== */
+        a,
+        a font,
+        a b {
+            text-decoration: none !important;
+        }
+
+        #total-harga {
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            color: #374375;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 14px 0;
+            padding: 10px 14px;
+            background-color: #eef0fa;
+            border: 1px solid #dfe1f0;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 2px 6px rgba(55, 67, 117, 0.08);
+        }
+
+        #tambah-keranjang {
+            background-color: #eef0fa;
+            color: #374375;
+            border: 2px solid #374375;
+            padding: 8px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-left: 8px;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            transition: all 0.25s ease;
+        }
+
+        #tambah-keranjang:hover {
+            background-color: #374375;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(55, 67, 117, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .cart-float {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 9999;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #374375, #babde2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(55, 67, 117, 0.35);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            user-select: none;
+        }
+
+        .cart-float:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 10px 28px rgba(55, 67, 117, 0.45);
+        }
+
+        .cart-float span.emoji {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 22px;
+            height: 22px;
+            background-color: #5b6491;
+            color: #ffffff;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            box-shadow: 0 2px 6px rgba(91, 100, 145, 0.4);
+            border: 2px solid #ffffff;
+        }
+
+        .cart-panel {
+            position: fixed;
+            right: 24px;
+            bottom: 96px;
+            z-index: 9998;
+            width: 340px;
+            max-width: calc(100vw - 48px);
+            max-height: 70vh;
+            background-color: #ffffff;
+            border: 1px solid #dfe1f0;
+            border-radius: 16px;
+            box-shadow: 0 12px 36px rgba(55, 67, 117, 0.22);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+        }
+
+        .cart-panel.open {
+            display: flex;
+            animation: panelIn 0.28s ease-out;
+        }
+
+        @keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .cart-panel-header {
+            padding: 14px 18px;
+            background-color: #eef0fa;
+            border-bottom: 1px solid #dfe1f0;
+            color: #374375;
+            font-weight: bold;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-panel-close {
+            cursor: pointer;
+            color: #babde2;
+            font-size: 18px;
+            line-height: 1;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .cart-panel-close:hover {
+            background-color: #dfe1f0;
+        }
+
+        .cart-panel-body {
+            padding: 10px 14px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 13px;
+            color: #4a4a4a;
+        }
+
+        .cart-item {
+            padding: 10px 0;
+            border-bottom: 1px dashed #dfe1f0;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            color: #374375;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-meta {
+            color: #5b6491;
+            font-size: 12px;
+        }
+
+        .cart-empty {
+            padding: 30px 10px;
+            text-align: center;
+            color: #9a9dc4;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .cart-panel-footer {
+            padding: 14px 18px;
+            border-top: 1px solid #dfe1f0;
+            background-color: #fffcf5;
+        }
+
+        .cart-subtotal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #4a4a4a;
+            font-size: 14px;
+        }
+
+        .cart-subtotal span.val {
+            color: #374375;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .cart-checkout-btn {
+            width: 100%;
+            background-color: #374375;
+            color: #ffffff;
+            border: none;
+            padding: 11px 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            font-size: 14px;
+            transition: all 0.25s ease;
+        }
+
+        .cart-checkout-btn:hover {
+            background-color: #2a3358;
+            box-shadow: 0 4px 14px rgba(55, 67, 117, 0.3);
+        }
+
+        .cart-checkout-btn:disabled {
+            background-color: #c9cbe6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            z-index: 10000;
+            background-color: #374375;
+            color: #ffffff;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(55, 67, 117, 0.35);
+            opacity: 0;
+            transition: all 0.35s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .cart-item-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .cart-item-harga {
+            color: #5b6491;
+            font-size: 12px;
+            flex: 0 1 auto;
+            min-width: 0;
+            white-space: nowrap;
+        }
+
+        .qty-stepper {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            border: 1px solid #dfe1f0;
+            border-radius: 999px;
+            overflow: hidden;
+            background-color: #eef0fa;
+            width: fit-content;
+        }
+
+        .qty-btn {
+            width: 26px;
+            height: 26px;
+            border: none;
+            background-color: #dfe1f0;
+            color: #374375;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: background-color 0.18s, color 0.18s, transform 0.1s;
+            user-select: none;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .qty-btn:hover {
+            background-color: #374375;
+            color: #ffffff;
+        }
+
+        .qty-btn:active {
+            transform: scale(0.94);
+        }
+
+        .qty-val {
+            min-width: 28px;
+            text-align: center;
+            font-weight: bold;
+            color: #4a4a4a;
+            font-size: 12px;
+            background-color: #ffffff;
+            padding: 0 6px;
+            height: 26px;
+            line-height: 26px;
+        }
+
+        .cart-item-subtotal {
+            font-weight: bold;
+            color: #374375;
+            font-size: 12px;
+            flex: 0 1 auto;
+            min-width: 0;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .cart-item-bottom-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 4px;
+        }
+
+        .cart-item-delete {
+            color: #5b6491;
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            background: none;
+            border: none;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            padding: 2px 0;
+            transition: color 0.18s;
+        }
+
+        .cart-item-delete:hover {
+            color: #374375;
+        }
+
+        body {
+            line-height: 1.65 !important;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        p,
+        td,
+        font {
+            line-height: inherit !important;
+        }
+
+        img {
+            border-radius: 12px !important;
+            object-fit: cover;
+            transition: transform 0.3s ease !important;
+            border: none !important;
+            box-shadow: 0 3px 14px rgba(55, 67, 117, 0.1);
+        }
+
+        img:hover {
+            transform: scale(1.03);
+        }
+
+        table[bgcolor="#ffffff"],
+        table[bgcolor="#fffcf5"] {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(55, 67, 117, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        table[bgcolor="#ffffff"]:hover,
+        table[bgcolor="#fffcf5"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(55, 67, 117, 0.14);
+        }
+
+        table[bgcolor="#eef0fa"] {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 3px 14px rgba(55, 67, 117, 0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        table[bgcolor="#eef0fa"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(55, 67, 117, 0.1);
+        }
+
+        td[bgcolor="#fffcf5"] {
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(55, 67, 117, 0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        td[bgcolor="#fffcf5"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(55, 67, 117, 0.12);
+        }
+
+        input[type="submit"],
+        input[type="reset"],
+        button {
+            border-radius: 999px !important;
+            transition: all 0.22s ease !important;
+            box-shadow: 0 2px 6px rgba(55, 67, 117, 0.1);
+        }
+
+        input[type="submit"]:hover,
+        input[type="reset"]:hover,
+        button:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 5px 15px rgba(55, 67, 117, 0.2) !important;
+        }
+
+        input[type="submit"]:active,
+        input[type="reset"]:active,
+        button:active {
+            transform: translateY(0) scale(0.98) !important;
+        }
+
+        a font[color="#374375"] {
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        a:hover font[color="#374375"] {
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-thickness: 1px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="number"],
+        textarea,
+        select {
+            border: 1px solid #dfe1f0 !important;
+            border-radius: 8px !important;
+            padding: 8px 10px !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none !important;
+            border-color: #374375 !important;
+            box-shadow: 0 0 0 3px rgba(55, 67, 117, 0.12) !important;
+        }
+
+        hr[color="#dfe1f0"] {
+            border: none;
+            border-top: 1px solid #dfe1f0;
+            height: 1px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #eef0fa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #babde2;
+            border-radius: 999px;
+            border: 2px solid #eef0fa;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374375;
+        }
+
+        .btn-back-catalog {
+            display: inline-block;
+            margin-top: 6px;
+            background-color: #374375;
+            color: #ffffff;
+            border: none;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            font-size: 13px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(55, 67, 117, 0.2);
+        }
+
+        .btn-back-catalog:hover {
+            background-color: #2a3358;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(55, 67, 117, 0.3);
+        }
+    </style>
+</head>
+
+<body bgcolor="#FFFCF5">
+
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td colspan="3" background="2.jpg" align="center" height="180">
+                <br>
+                <h1><b>
+                        <font color="#374375" size="6" face="Playfair Display, Segoe UI, serif" class="brand-title">THE
+                            JELLY PARLOUR</font>
+                    </b></h1>
+
+                <marquee direction="left" scrollamount="4" width="70%">
+                    <font color="#374375" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                        <i>Welcome to The Jelly Parlour! Your home for pastel dreams, gentle cuddles, and timeless
+                            charm.</i>
+                    </font>
+                </marquee>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="3" bgcolor="#374375" align="center" height="45">
+                <b>
+                    <font face="Poppins, Segoe UI, Arial, sans-serif" size="2">
+                        <a href="index.html">
+                            <font color="#FFFCF5">KATALOG PRODUK</font>
+                        </a>
+                        <font color="#babde2">&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+
+                        <a href="tentang.html">
+                            <font color="#FFFCF5">TENTANG KAMI</font>
+                        </a>
+                        <font color="#babde2">&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+
+                        <a href="kontak.html">
+                            <font color="#FFFCF5">KONTAK</font>
+                        </a>
+                    </font>
+                </b>
+            </td>
+        </tr>
+
+        <tr>
+            <td width="23%" bgcolor="#eef0fa" valign="top">
+                <table width="100%" border="0" cellpadding="20" cellspacing="0">
+                    <tr>
+                        <td>
+                            <h4>
+                                <font color="#374375" size="3" face="Poppins, Segoe UI, Arial, sans-serif"><b>Why You'll
+                                        Love
+                                        Jellycat</b></font>
+                            </h4>
+                            <hr color="#dfe1f0" size="1">
+                            <br>
+
+                            <table width="100%" border="0" cellpadding="4" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull; Bulu
+                                            Premium Ekstra Lembut</font>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull; Desain
+                                            Menggemaskan & Estetik</font>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull; Aman &
+                                            Nyaman Dipeluk</font>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull;
+                                            Kualitas Mewah Tahan Lama</font>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <br><br>
+                            <p align="justify">
+                                <i>
+                                    <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                        "Setiap boneka Jellycat dirancang penuh kasih sayang dengan bahan premium
+                                        terbaik, membawa kehangatan dan keceriaan abadi di setiap pelukan Anda."
+                                    </font>
+                                </i>
+                            </p>
+
+                            <br><br>
+                            <hr color="#dfe1f0" size="1">
+                            <br>
+                            <a href="index.html" class="btn-back-catalog">Kembali Ke Katalog</a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <td width="54%" bgcolor="#ffffff" valign="top">
+                <table width="100%" border="0" cellpadding="30" cellspacing="0">
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td width="45%" valign="top" align="center">
+                                        <img src="Bashful Large Cream Bunny💗.jpg" width="280" height="280"
+                                            alt="Bashful Bunny" border="1" hspace="10" vspace="10">
+                                    </td>
+
+                                    <td width="55%" valign="top">
+                                        <table width="100%" border="0" cellpadding="5" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <h2>
+                                                        <font color="#374375"
+                                                            face="Poppins, Segoe UI, Arial, sans-serif" size="5">Bashful
+                                                            Bunny</font>
+                                                    </h2>
+                                                    <hr color="#dfe1f0" size="1">
+                                                    <br>
+
+                                                    <h4>
+                                                        <font color="#374375" size="2"
+                                                            face="Poppins, Segoe UI, Arial, sans-serif"><b>Deskripsi
+                                                                Produk</b>
+                                                        </font>
+                                                    </h4>
+                                                    <p align="justify">
+                                                        <font color="#5b6491"
+                                                            face="Poppins, Segoe UI, Arial, sans-serif" size="2">
+                                                            Sambut kehangatan ikonik dari Bashful Bunny, kelinci
+                                                            bertelinga panjang yang paling dicintai di seluruh dunia!
+                                                            Dengan tekstur bulu super flafy yang ramah di kulit dan mata
+                                                            manik yang sayu menggemaskan, boneka ini siap menjadi
+                                                            pendamping setia anak-anak maupun kolektor dewasa. Desainnya
+                                                            yang timeless menjadikannya hadiah paling sempurna untuk
+                                                            merayakan momen berharga.
+                                                        </font>
+                                                    </p>
+                                                    <br>
+
+                                                    <h4>
+                                                        <font color="#374375" size="2"
+                                                            face="Poppins, Segoe UI, Arial, sans-serif"><b>Spesifikasi
+                                                                Kualitas</b></font>
+                                                    </h4>
+                                                    <font color="#5b6491" face="Poppins, Segoe UI, Arial, sans-serif"
+                                                        size="2">
+                                                        <table width="100%" border="0" cellpadding="3" cellspacing="0">
+                                                            <tr>
+                                                                <td>&bull; <b>Bahan:</b> Luxury luxury-soft polyester
+                                                                    fabric</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>&bull; <b>Fitur:</b> Telinga panjang menjuntai
+                                                                    lembut (long-eared design)</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>&bull; <b>Keamanan:</b> Hypoallergenic, aman untuk
+                                                                    semua usia</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>&bull; <b>Original:</b> Dilengkapi tag kain resmi
+                                                                    Jellycat London</td>
+                                                            </tr>
+                                                        </table>
+                                                    </font>
+                                                    <br><br>
+
+                                                    <form action="transaksi.html" method="GET">
+                                                        <h4>
+                                                            <font color="#374375"
+                                                                face="Poppins, Segoe UI, Arial, sans-serif" size="2">
+                                                                <b>Pilihan Ukuran</b></font>
+                                                        </h4>
+                                                        <font color="#5b6491"
+                                                            face="Poppins, Segoe UI, Arial, sans-serif" size="2">
+                                                            <input type="radio" name="ukuran" value="Small"> Small
+                                                            (225.000) &nbsp;&nbsp;<br>
+                                                            <input type="radio" name="ukuran" value="Medium" checked>
+                                                            Medium (345.000) &nbsp;&nbsp;<br>
+                                                            <input type="radio" name="ukuran" value="Large"> Large
+                                                            (450.000)
+                                                        </font>
+                                                        <br><br>
+
+                                                        <font color="#374375"
+                                                            face="Poppins, Segoe UI, Arial, sans-serif" size="2">
+                                                            <b>Jumlah:</b></font>
+                                                        <div class="qty-stepper" style="margin-top: 8px;">
+                                                            <button type="button" class="qty-btn minus"
+                                                                title="Kurangi">&#x2212;</button>
+                                                            <span class="qty-val">1</span>
+                                                            <button type="button" class="qty-btn plus"
+                                                                title="Tambah">+</button>
+                                                        </div>
+                                                        <input type="hidden" name="jumlah" value="1">
+                                                        <br><br>
+
+                                                        <p id="total-harga">Total: Rp 0</p>
+                                                        <br>
+
+                                                        <input type="submit" value="Lanjut ke Pembelian"
+                                                            style="background-color: #374375; color: white; border: none; padding: 10px 24px; font-weight: bold; cursor: pointer;"><button
+                                                            type="button" id="tambah-keranjang">+ Tambah ke
+                                                            Keranjang</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <td width="23%" bgcolor="#eef0fa" valign="top">
+                <table width="100%" border="0" cellpadding="20" cellspacing="0">
+                    <tr>
+                        <td>
+                            <h4>
+                                <font color="#374375" size="3" face="Poppins, Segoe UI, Arial, sans-serif"><b>Shipping
+                                        Info</b>
+                                </font>
+                            </h4>
+                            <hr color="#dfe1f0" size="1">
+                            <br>
+                            <font color="#5b6491" face="Poppins, Segoe UI, Arial, sans-serif" size="2">
+                                <p><b>Regular Delivery:</b><br>2 - 5 Hari Kerja</p>
+                                <p><b>Express Delivery:</b><br>1 - 2 Hari Kerja</p>
+                                <p><i>Tersedia pengiriman ke seluruh wilayah Indonesia.</i></p>
+                            </font>
+
+                            <br><br>
+                            <h4>
+                                <font color="#374375" size="3" face="Poppins, Segoe UI, Arial, sans-serif"><b>Perfect
+                                        For</b>
+                                </font>
+                            </h4>
+                            <hr color="#dfe1f0" size="1">
+                            <br>
+                            <table width="100%" border="0" cellpadding="4" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull; Teman
+                                            Tidur & Santai</font>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull; Hadiah
+                                            Spesial Orang Tersayang</font>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull; Koleksi
+                                            Penggemar Plushie</font>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <font color="#5b6491" size="2" face="Poppins, Segoe UI, Arial, sans-serif">
+                                            &bull;
+                                            Dekorasi Kamar Estetik</font>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+        </tr>
+
+        <tr>
+            <td colspan="3" bgcolor="#dfe1f0" align="center" height="45">
+                <p>
+                    <font color="#374375" face="Poppins, Segoe UI, Arial, sans-serif" size="2">&copy; 2026 The Jellycat
+                        Parlour.
+                        Viera Azzahra 10525075 - UTS Komputer Aplikasi Teknologi Informasi.</font>
+                </p>
+            </td>
+        </tr>
+    </table>
+    <div class="cart-float" id="cartFloat" title="Keranjang Belanja">
+        <span class="emoji">🛒</span>
+        <div class="cart-badge" id="cartBadge">0</div>
+    </div>
+
+    <div class="cart-panel" id="cartPanel">
+        <div class="cart-panel-header">
+            <span>🧸 Keranjang Jellycat</span>
+            <span class="cart-panel-close" id="cartPanelClose" title="Tutup">&times;</span>
+        </div>
+        <div class="cart-panel-body" id="cartPanelBody">
+            <div class="cart-empty">Keranjangmu masih kosong, yuk belanja!</div>
+        </div>
+        <div class="cart-panel-footer">
+            <div class="cart-subtotal">
+                <span>Subtotal:</span>
+                <span class="val" id="cartSubtotal">Rp 0</span>
+            </div>
+            <button class="cart-checkout-btn" id="cartCheckoutBtn" disabled>Checkout &rarr;</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toastMsg">Item ditambahkan ke keranjang</div>
+
+    <script>
+        (function () {
+            var CART_KEY = "jellycat_parlour_cart";
+
+            function formatRupiah(num) {
+                var s = String(Math.round(num || 0));
+                var out = "";
+                for (var i = s.length - 1, c = 0; i >= 0; i--, c++) {
+                    if (c > 0 && c % 3 === 0) out = "." + out;
+                    out = s.charAt(i) + out;
+                }
+                return "Rp " + out;
+            }
+
+            function parseHargaDariLabel(labelTeks) {
+                var digits = (labelTeks || "").replace(/[^0-9]/g, "");
+                return digits ? parseInt(digits, 10) : 0;
+            }
+
+            function dapatkanHargaSatuanDanUkuran() {
+                var radios = document.querySelectorAll('input[name="ukuran"]');
+                var checked = null;
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) { checked = radios[i]; break; }
+                }
+                if (!checked && radios.length > 0) checked = radios[0];
+                if (!checked) return { harga: 0, ukuran: "" };
+                var labelText = "";
+                var cur = checked.nextSibling;
+                while (cur) {
+                    if (cur.nodeType === 1 && (cur.tagName === "BR" || cur.tagName === "INPUT")) break;
+                    if (cur.nodeType === 3) labelText += cur.textContent;
+                    cur = cur.nextSibling;
+                }
+                if (!labelText.trim() && checked.parentNode) {
+                    var html = checked.parentNode.innerHTML || "";
+                    var val = checked.value || "";
+                    var re = new RegExp(val + "[^\\n<]*", "i");
+                    var match = html.match(re);
+                    if (match) labelText = match[0];
+                }
+                var harga = parseHargaDariLabel(labelText);
+                var ukuran = checked.value || "";
+                return { harga: harga, ukuran: ukuran };
+            }
+
+            function dapatkanNamaProduk() {
+                var sel = document.querySelector('select[name="produk"]');
+                if (sel && sel.value) return String(sel.options[sel.selectedIndex].text || sel.value).trim();
+                var h2 = document.querySelector("h2 font");
+                if (h2 && h2.textContent) return h2.textContent.trim();
+                var fallback = document.querySelector("h2");
+                return fallback ? fallback.textContent.trim() : "Produk Jellycat";
+            }
+
+            function dapatkanJumlah() {
+                var inp = document.querySelector('input[name="jumlah"]');
+                var val = inp ? parseInt(inp.value, 10) : 1;
+                if (isNaN(val) || val < 1) val = 1;
+                if (val > 30) val = 30;
+                return val;
+            }
+
+            function updateTotalHarga() {
+                var info = dapatkanHargaSatuanDanUkuran();
+                var qty = dapatkanJumlah();
+                var total = info.harga * qty;
+                var el = document.getElementById("total-harga");
+                if (el) el.textContent = "Total: " + formatRupiah(total);
+            }
+
+            function getCart() {
+                try {
+                    var raw = localStorage.getItem(CART_KEY);
+                    if (!raw) return [];
+                    var arr = JSON.parse(raw);
+                    return Array.isArray(arr) ? arr : [];
+                } catch (e) { return []; }
+            }
+
+            function saveCart(cart) {
+                try { localStorage.setItem(CART_KEY, JSON.stringify(cart || [])); }
+                catch (e) { }
+            }
+
+            function totalItemCount(cart) {
+                var t = 0;
+                for (var i = 0; i < cart.length; i++) t += (cart[i].jumlah || 0);
+                return t;
+            }
+
+            function totalSubtotal(cart) {
+                var t = 0;
+                for (var i = 0; i < cart.length; i++) t += (cart[i].subtotal || 0);
+                return t;
+            }
+
+            function updateBadge() {
+                var cart = getCart();
+                var n = totalItemCount(cart);
+                var badge = document.getElementById("cartBadge");
+                if (badge) {
+                    badge.textContent = String(n);
+                    badge.style.display = n > 0 ? "flex" : "none";
+                }
+                var sub = document.getElementById("cartSubtotal");
+                if (sub) sub.textContent = formatRupiah(totalSubtotal(cart));
+                var btn = document.getElementById("cartCheckoutBtn");
+                if (btn) btn.disabled = cart.length === 0;
+            }
+
+            function escapeHtml(s) {
+                return String(s || "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+            }
+
+            function renderCartPanel() {
+                var cart = getCart();
+                var body = document.getElementById("cartPanelBody");
+                if (!body) return;
+                if (cart.length === 0) {
+                    body.innerHTML = '<div class="cart-empty">Keranjangmu masih kosong, yuk belanja!</div>';
+                    return;
+                }
+                var html = "";
+                for (var i = 0; i < cart.length; i++) {
+                    var it = cart[i];
+                    html += '<div class="cart-item" data-idx="' + i + '">';
+                    html += '<div class="cart-item-name">' + escapeHtml(it.nama) + (it.ukuran ? ' - ' + escapeHtml(it.ukuran) : '') + '</div>';
+                    html += '<div class="cart-item-meta-row">';
+                    html += '<span class="cart-item-harga">' + formatRupiah(it.hargaSatuan) + '</span>';
+                    html += '<div class="qty-stepper">';
+                    html += '<button type="button" class="qty-btn minus" data-idx="' + i + '" title="Kurangi">&#x2212;</button>';
+                    html += '<span class="qty-val">' + it.jumlah + '</span>';
+                    html += '<button type="button" class="qty-btn plus" data-idx="' + i + '" title="Tambah">+</button>';
+                    html += '</div>';
+                    html += '<span class="cart-item-subtotal">' + formatRupiah(it.subtotal) + '</span>';
+                    html += '</div>';
+                    html += '<div class="cart-item-bottom-row">';
+                    html += '<button type="button" class="cart-item-delete" data-idx="' + i + '">Hapus</button>';
+                    html += '</div>';
+                    html += '</div>';
+                }
+                body.innerHTML = html;
+            }
+
+            function removeItem(idx) {
+                var cart = getCart();
+                if (idx < 0 || idx >= cart.length) return;
+                cart.splice(idx, 1);
+                saveCart(cart);
+                updateBadge();
+                renderCartPanel();
+                if (cart.length === 0) togglePanel(false);
+            }
+
+            function handleStepperClick(idx, delta) {
+                var cart = getCart();
+                if (idx < 0 || idx >= cart.length) return;
+                var item = cart[idx];
+                if (delta < 0) {
+                    if (item.jumlah <= 1) {
+                        removeItem(idx);
+                        return;
+                    } else {
+                        item.jumlah -= 1;
+                    }
+                } else {
+                    if (item.jumlah >= 30) {
+                        showToast("Maksimal pembelian 30 pcs");
+                        return;
+                    }
+                    item.jumlah += 1;
+                    if (item.jumlah > 30) item.jumlah = 30;
+                }
+                item.subtotal = item.jumlah * item.hargaSatuan;
+                saveCart(cart);
+                updateBadge();
+                var body = document.getElementById("cartPanelBody");
+                if (body) {
+                    var cart2 = getCart();
+                    if (idx >= cart2.length) { renderCartPanel(); return; }
+                    var el = body.querySelector('[data-idx="' + idx + '"]');
+                    if (el) {
+                        var qtyEl = el.querySelector(".qty-val");
+                        var subEl = el.querySelector(".cart-item-subtotal");
+                        if (qtyEl) qtyEl.textContent = String(cart2[idx].jumlah);
+                        if (subEl) subEl.textContent = formatRupiah(cart2[idx].subtotal);
+                    } else {
+                        renderCartPanel();
+                    }
+                }
+            }
+
+            function initStepperDelegation() {
+                var body = document.getElementById("cartPanelBody");
+                if (!body) return;
+                body.addEventListener("click", function (e) {
+                    var t = e.target;
+                    if (!t || !t.classList) return;
+                    if (t.classList.contains("qty-btn")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var idx = parseInt(t.getAttribute("data-idx"), 10);
+                        if (isNaN(idx)) return;
+                        if (t.classList.contains("plus")) handleStepperClick(idx, 1);
+                        else if (t.classList.contains("minus")) handleStepperClick(idx, -1);
+                    } else if (t.classList.contains("cart-item-delete")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var idx2 = parseInt(t.getAttribute("data-idx"), 10);
+                        if (isNaN(idx2)) return;
+                        removeItem(idx2);
+                    }
+                });
+            }
+
+            function showToast(msg) {
+                var t = document.getElementById("toastMsg");
+                if (!t) return;
+                if (msg) t.textContent = msg;
+                t.classList.add("show");
+                setTimeout(function () { t.classList.remove("show"); }, 2000);
+            }
+
+            function tambahKeKeranjang() {
+                var info = dapatkanHargaSatuanDanUkuran();
+                if (info.harga <= 0) { showToast("Pilih ukuran dulu ya sweety! 🧸"); return; }
+                var nama = dapatkanNamaProduk();
+                var qty = dapatkanJumlah();
+                var cart = getCart();
+                var key = nama + "|" + info.ukuran;
+                var found = false;
+                var khususToast = null;
+                var qtyDitambahkan = qty;
+                for (var i = 0; i < cart.length; i++) {
+                    if ((cart[i].nama + "|" + cart[i].ukuran) === key) {
+                        var newJumlah = cart[i].jumlah + qty;
+                        if (newJumlah > 30) {
+                            var selisih = 30 - cart[i].jumlah;
+                            if (selisih <= 0) {
+                                khususToast = "Maksimal pembelian 30 pcs per produk";
+                            } else {
+                                cart[i].jumlah = 30;
+                                cart[i].subtotal = cart[i].jumlah * cart[i].hargaSatuan;
+                                qtyDitambahkan = selisih;
+                                khususToast = "Ditambah " + selisih + " pcs (maks. 30 pcs per produk)";
+                            }
+                        } else {
+                            cart[i].jumlah = newJumlah;
+                            cart[i].subtotal = cart[i].jumlah * cart[i].hargaSatuan;
+                            qtyDitambahkan = qty;
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    if (qty > 30) { qty = 30; qtyDitambahkan = 30; }
+                    cart.push({
+                        nama: nama,
+                        ukuran: info.ukuran,
+                        jumlah: qty,
+                        hargaSatuan: info.harga,
+                        subtotal: info.harga * qty
+                    });
+                }
+                saveCart(cart);
+                updateBadge();
+                renderCartPanel();
+                if (khususToast) {
+                    showToast(khususToast);
+                } else {
+                    showToast(qtyDitambahkan + " " + nama + " ditambahkan");
+                }
+            }
+
+            function togglePanel(force) {
+                var p = document.getElementById("cartPanel");
+                if (!p) return;
+                var isOpen = p.classList.contains("open");
+                var shouldOpen = typeof force === "boolean" ? force : !isOpen;
+                if (shouldOpen) {
+                    renderCartPanel();
+                    updateBadge();
+                    p.classList.add("open");
+                } else {
+                    p.classList.remove("open");
+                }
+            }
+
+            function checkoutCart() {
+                var cart = getCart();
+                if (cart.length === 0) return;
+                window.location.href = "transaksi.html";
+            }
+
+            function initJumlahStepper() {
+                var stepper = document.querySelector('form .qty-stepper');
+                if (!stepper) return;
+                var minusBtn = stepper.querySelector('.qty-btn.minus');
+                var plusBtn = stepper.querySelector('.qty-btn.plus');
+                var valEl = stepper.querySelector('.qty-val');
+                var hiddenInput = document.querySelector('input[name="jumlah"]');
+                if (!minusBtn || !plusBtn || !valEl || !hiddenInput) return;
+
+                function setJumlah(val) {
+                    if (val < 1) val = 1;
+                    if (val > 30) val = 30;
+                    valEl.textContent = String(val);
+                    hiddenInput.value = String(val);
+                    updateTotalHarga();
+                }
+
+                minusBtn.addEventListener("click", function () {
+                    var cur = parseInt(hiddenInput.value, 10) || 1;
+                    setJumlah(cur - 1);
+                });
+
+                plusBtn.addEventListener("click", function () {
+                    var cur = parseInt(hiddenInput.value, 10) || 1;
+                    setJumlah(cur + 1);
+                });
+            }
+
+            function initHitungHarga() {
+                var radios = document.querySelectorAll('input[name="ukuran"]');
+                for (var i = 0; i < radios.length; i++) {
+                    radios[i].addEventListener("change", updateTotalHarga);
+                }
+                var qtyInput = document.querySelector('input[name="jumlah"]');
+                if (qtyInput) qtyInput.addEventListener("input", updateTotalHarga);
+                var selProduk = document.querySelector('select[name="produk"]');
+                if (selProduk) selProduk.addEventListener("change", updateTotalHarga);
+                updateTotalHarga();
+            }
+
+            function initCartUI() {
+                var float = document.getElementById("cartFloat");
+                if (float) float.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    togglePanel();
+                });
+                var close = document.getElementById("cartPanelClose");
+                if (close) close.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    togglePanel(false);
+                });
+                var panel = document.getElementById("cartPanel");
+                if (panel) panel.addEventListener("click", function (e) { e.stopPropagation(); });
+                document.addEventListener("click", function () { togglePanel(false); });
+                var coBtn = document.getElementById("cartCheckoutBtn");
+                if (coBtn) coBtn.addEventListener("click", checkoutCart);
+                var addBtn = document.getElementById("tambah-keranjang");
+                if (addBtn) addBtn.addEventListener("click", tambahKeKeranjang);
+                initStepperDelegation();
+                updateBadge();
+            }
+
+            initJumlahStepper();
+            initHitungHarga();
+            initCartUI();
+        })();
+    </script>
+
+</body>
+
+</html>
